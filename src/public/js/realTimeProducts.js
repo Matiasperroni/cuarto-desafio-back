@@ -1,8 +1,17 @@
-
 const socket = io();
-
-socket.emit("algo", "nose algo")
-socket.on("message", (data)=>{console.log(data)})
-socket.on("hola", (asd) => {
-    console.log(asd);
-})
+const productList = document.getElementById("productsList")
+// socket.on("message", (data)=>{console.log(data)})
+socket.on("sendProducts", (products) => {
+    console.log(products);
+    productList.innerHTML = "";
+    products.forEach(product => {
+        const pCreated = document.createElement("p")
+        pCreated.textContent = `
+        Id: ${product.id}
+        Title: ${product.title}
+        Description: ${product.description}
+        Category: ${product.category}
+        Stock: ${product.stock}`;
+        productList.appendChild(pCreated)
+    });
+});

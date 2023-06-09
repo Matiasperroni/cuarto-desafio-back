@@ -25,18 +25,15 @@ const serverHttp = app.listen(8080, () => {
 
 const productManager = new ProductManager();
 app.get("/realtimeproducts", async (req, res) => {
-    const products = await productManager.getProducts();
-    res.render("realTimeProducts", { products });
+    res.render("realTimeProducts");
 });
 //websocket
 const io = new Server(serverHttp);
-// const sendProductList = async() =>  {
-//     const products = await productManager.getProducts();
-    
-//     return products
-// }
-
-// io.on("message", data=>console.log(data))
+//function to get products 
+const sendProductList = async () => {
+    const products = await productManager.getProducts();
+    return products;
+};
 
 
 app.use(express.json());
@@ -47,22 +44,8 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
 
-io.on("connection",  (socket) => {
+io.on("connection", async (socket) => {
     console.log("Nuevo cliente conectado");
-    socket.on("algo", (data) => {
-        console.log(data);
-    })
-    socket.emit("message", "mensajeeeeeeeeeee")
-//     io.emit("mensaje", "hola sisi")
-//     let hola = {title: "hola"}
-// socket.emit("productsUpdated", hola)
-    // let products = await sendProductList()
-    // socket.emit("productsUpdated", products)
+    const products = await sendProductList();
+    socket.emit("sendProducts", products);
 });
-// io.emit("message", "este mensajito")
-// io.on("algo", (data) => {
-//     console.log(data);
-// })
-// io.emit("message", "mensajito")
-
-io.emit("hola", "hola")
